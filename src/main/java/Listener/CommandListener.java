@@ -11,14 +11,6 @@ public class CommandListener {
                 e.getChannel().sendMessage("test").complete();
                 break;
             }
-            case "chuj" : {
-                e.getChannel().sendMessage("" + e.getMessage().getAuthor().getAsMention() + " to siusiak!").complete();
-                break;
-            }
-            case "siur" : {
-                e.getChannel().sendMessage("" + e.getMessage().getAuthor().getAsMention() + " Twoja mama to siur :)").complete();
-                break;
-            }
             case "test" : {
                 e.getChannel().sendMessage("no więc tak");
             }
