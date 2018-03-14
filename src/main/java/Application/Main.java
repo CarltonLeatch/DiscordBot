@@ -12,30 +12,29 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import javax.security.auth.login.LoginException;
 
-public class Main extends ListenerAdapter{
+public class Main extends ListenerAdapter {
 
     public static String prefix;
     public static JDA jda;
 
-    public static void main(String[] args){
+
+    public static void main(String args[]) {
+
         prefix = "!";
         JDABuilder builder = new JDABuilder(AccountType.BOT);
         builder.setToken("NDEyMzU0Mjk0OTQ4NDI5ODI1.DWJF_Q.8KGrvYAK5erNztm5zOAh92kK4jU");
         builder.setAutoReconnect(true);
         builder.setStatus(OnlineStatus.ONLINE);
         builder.setGame(Game.of("type !help to get help"));
-
         jda = null;
-
         try{
             jda = builder.buildAsync();
         }catch (LoginException | IllegalArgumentException | RateLimitedException e){
             e.printStackTrace();
         }
-
         jda.addEventListener(new ReadyListener());
         jda.addEventListener(new MessageReceivedListener());
     }
-
-
 }
+
+
