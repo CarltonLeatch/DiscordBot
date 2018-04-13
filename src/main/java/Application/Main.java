@@ -22,7 +22,7 @@ public class Main extends ListenerAdapter {
 
         prefix = "!";
         JDABuilder builder = new JDABuilder(AccountType.BOT);
-        builder.setToken("NDIzNTM3NTk3MjM5OTE4NTk0.DYry0g.rnScWRlFRCB8d7oilt3sOzoAX1A");
+        builder.setToken("NDM0Mjk2MjEzNjAxNTE3NTY4.DbIVjA._xSdignBSiBkJjUhu-Xto2NZ8Ns");
         builder.setAutoReconnect(true);
         builder.setStatus(OnlineStatus.ONLINE);
         builder.setGame(Game.of("type !help to get help"));
