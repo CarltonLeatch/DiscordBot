@@ -1,13 +1,14 @@
 package main.java.Model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Vote {
 
     private int id;
     private String title;
-    private ArrayList<Arguments> arguments;
-    private long[] AccountId;
+    private List<Arguments> arguments;
+    private List<String> AccountId;
 
     public int getId() {
         return id;
@@ -25,19 +26,22 @@ public class Vote {
         this.title = title;
     }
 
-    public ArrayList<Arguments> getArguments() {
+    public List<Arguments> getArguments() {
         return arguments;
     }
 
-    public void setArguments(ArrayList<Arguments> arguments) {
+    public void setArguments(List<Arguments> arguments) {
         this.arguments = arguments;
     }
 
-    public long[] getAccountId() {
+    public List<String> getAccountId() {
         return AccountId;
     }
 
-    public void setAccountId(long[] accountId) {
+    public void setAccountId(List<String> accountId) {
         AccountId = accountId;
     }
 }
+
+
+
