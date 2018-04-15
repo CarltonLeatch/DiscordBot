@@ -25,7 +25,8 @@ public class MessageReceivedListener extends ListenerAdapter {
         if (!e.getMessage().getContent().startsWith(Main.prefix)) return;
 
         if (e.getChannelType() == ChannelType.PRIVATE) {
-            e.getChannel().sendMessage("Visit me on Discord Server! ").complete(); return;
+            e.getChannel().sendMessage("Visit me on Discord Server! ").complete();
+            return;
         } else {
             System.out.println(String.format("[PUBLIC MSG] [%s][%s] %s#%s: %s", e.getGuild().getName(), e.getChannel().getName(), e.getAuthor().getName(), e.getAuthor().getDiscriminator(), e.getMessage().getRawContent()));
         }
@@ -39,51 +40,14 @@ public class MessageReceivedListener extends ListenerAdapter {
         switch (command.toLowerCase()) {
             case "title": {
                 String[] args = e.getMessage().getContent().replace(Main.prefix, "").replace(command, "").split(" ");
-                Vote vote = new Vote();
-                String title = "";
-                for (String s : args)
-                    title += s + " ";
-                vote.setTitle(title);
-                List<String> AccoundIdList = new ArrayList<String>();
-                vote.setAccountId(AccoundIdList);
-                e.getChannel().sendMessage("Tytuł vote'a został ustawiony").complete();
-                db.save(vote);
-
-                System.out.println(vote.getTitle() + "\n" + vote.getId());
+                e.getChannel().sendMessage(createPoll(args)).complete();
                 break;
             }
-            case "argument": {
+            case "arguments": {
                 String[] args = e.getMessage().getContent().replace(Main.prefix, "").replace(command, "").split("/");
-                Vote vote = db.get(id);
-
-
-                if (vote == null)
-                    e.getChannel().sendMessage("Najpierw musisz dodać tytuł").complete();
-                else if (args.length == 0)
-                    e.getChannel().sendMessage("Musisz wpisać argumenty !").complete();
-                else {
-                    //    e.getChannel().sendMessage("@everyone").complete();
-                    List<Arguments> argumentsList = new ArrayList<Arguments>();
-                    int count = 0;
-                    int argId = 0;
-                    for (String s : args) {
-                        Arguments a = new Arguments();
-                        a.setArgument(s);
-                        a.setCount(count);
-                        a.setId(argId++);
-                        argumentsList.add(a);
-                        vote.setArguments(argumentsList);
-                    }
-                    String message = "```markdown\n" + vote.getTitle() + "\n";
-                    for (Arguments a : vote.getArguments())
-                        message += "[" + a.getId() + "] " + a.getArgument() + " <---- by zagłosować wpisz !vote " + a.getId() + "\n";
-                    db.update(vote, id);
-                    e.getChannel().sendMessage(message + "Można zacząć głosowanie ! ```").complete();
-                    System.out.println(id);
-                }
+                e.getChannel().sendMessage(createArgument(args)).complete();
+                break;
             }
-            break;
-
 
             case "vote": {
                 String[] args = e.getMessage().getContent().replace(Main.prefix, "").replace(command, "").split(" ");
@@ -122,7 +86,7 @@ public class MessageReceivedListener extends ListenerAdapter {
                     e.getChannel().sendMessage(resultCommand(id)).complete();
                     id++;
                 } else
-                    e.getChannel().sendMessage(resultCommand(Integer.parseInt(args[1])-1)).complete();
+                    e.getChannel().sendMessage(resultCommand(Integer.parseInt(args[1]) - 1)).complete();
                 break;
             }
 
@@ -133,7 +97,7 @@ public class MessageReceivedListener extends ListenerAdapter {
 
             case "help": {
                 e.getChannel().sendMessage("```markdown\nAby zacząć votowanie należy wpisać komendę\n !title [Pytanie]\n" +
-                        "Dodawanie argumentów do votowania i start:\n !argument [arg1]/[arg2]...\n by uzyskać wyniki należy wpisać\n!result ```").complete();
+                        "Dodawanie argumentów do votowania i start:\n !arguments [arg1]/[arg2]...\n by uzyskać wyniki należy wpisać\n!result ```").complete();
                 break;
             }
             default: {
@@ -153,7 +117,7 @@ public class MessageReceivedListener extends ListenerAdapter {
         Collections.sort(list, Comparator.comparingInt(Arguments::getId));
 
 
-        String result = "```xl\nGłosowanie nr :" + v.getId() + "\nTytuł głosowania: " + v.getTitle() + "\nIlość argumentów: " + v.getArguments().size() + "\n";
+        String result = "```xl\nGłosowanie nr :" + v.getId() + "\nTytuł głosowania:" + v.getTitle() + "\nIlość argumentów: " + v.getArguments().size() + "\n";
         result += "Zagłosowało: " + v.getAccountId().size() + " osób\nWyniki:\nID\tTytuł\tLiczba Głosów\tProcentowo\n";
         for (Arguments a : v.getArguments()) {
             result += "[" + a.getId() + "]\t" + a.getArgument() + "\t\t\t" + a.getCount() + "\t\t\t" + (a.getCount() / v.getAccountId().size() * 100) + "%\n";
@@ -187,4 +151,52 @@ public class MessageReceivedListener extends ListenerAdapter {
         }
         return result;
     }
+
+    private String createPoll(String[] args) {
+
+        Vote vote = new Vote();
+        String title = "";
+
+        args[0] =args[0].substring(0);
+        for (String s : args)
+            title += s + " ";
+        vote.setTitle(title);
+        List<String> AccoundIdList = new ArrayList<String>();
+        vote.setAccountId(AccoundIdList);
+        db.save(vote);
+        return "```markdown\nPytanie zostało utworzone!\nTeraz dodaj argumenty poleceniem !argument\nNazwa polla:" + vote.getTitle() + "```";
+    }
+
+    private String createArgument(String[] args) {
+        Vote vote = db.get(id);
+        args[0] =args[0].substring(1);
+        String result = "```markdown\n";
+        if (vote == null)
+            result += "Najpierw musisz dodać tytuł";
+        else if (args.length == 0)
+            result += "Musisz wpisać argumenty !";
+        else {
+            //    e.getChannel().sendMessage("@everyone").complete();
+            List<Arguments> argumentsList = new ArrayList<Arguments>();
+            int count = 0;
+            int argId = 0;
+            for (String s : args) {
+                Arguments a = new Arguments();
+                a.setArgument(s);
+                a.setCount(count);
+                a.setId(argId++);
+                argumentsList.add(a);
+                vote.setArguments(argumentsList);
+            }
+            String message =  vote.getTitle() + "\n";
+            for (Arguments a : vote.getArguments())
+                message += "[" + a.getId() + "] " + a.getArgument() + " <-- by zagłosować wpisz !vote " + a.getId() + "\n";
+            db.update(vote, id);
+            result += message + "Można zacząć głosowanie !!```";
+            System.out.println(id);
+        }
+            return result;
+
+    }
 }
+
